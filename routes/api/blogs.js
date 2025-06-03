@@ -94,6 +94,7 @@ router.put(
   "/:id",
   [
     auth,
+    admin,
     [
       check("title", "Title is required").not().isEmpty(),
       check("content", "Content is required").not().isEmpty(),
