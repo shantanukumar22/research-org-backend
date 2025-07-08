@@ -66,43 +66,41 @@ const getAllBlogs = async (req, res) => {
 
 const getBlogById = async (req, res) => {
   try {
-    // Fetch blog and populate user and likes data
     const blog = await Blog.findById(req.params.id)
-      .populate("user") // Populate the 'user' reference
-      .populate("likes.user") // Populate the 'likes' users (if needed)
-      .populate("comments.user"); // Populate the 'comments' users
+      .populate("user", ["name", "avatar"]) // Only populate necessary user fields
+      .populate("likes.user", ["name", "avatar"])
+      .populate("comments.user", ["name", "avatar"]);
 
     if (!blog || blog.status === "deleted") {
       return res.status(404).json({ msg: "Blog not found" });
     }
 
-    // If blog is anonymous, remove user details
-    if (blog.isAnonymous) {
-      blog.user = null;
-      blog.name = "Anonymous";
-    }
-
-    // Return response with blog data, ensuring date is present
+    // Create a response object with all necessary fields
     const response = {
+      _id: blog._id,
       title: blog.title,
       content: blog.content,
-      name: blog.name,
-      avatar: blog.avatar,
-      date: blog.date, // Ensure date is included
-      user: blog.user, // Will be null if anonymous
+      name: blog.isAnonymous ? "Anonymous" : blog.name,
+      avatar: blog.isAnonymous ? null : blog.avatar,
+      date: blog.date,
+      createdAt: blog.createdAt,
+      updatedAt: blog.updatedAt,
+      user: blog.isAnonymous ? null : blog.user,
       image: blog.image,
-      tags: blog.tags,
+      tags: blog.tags || [],
       section: blog.section,
-      comments: blog.comments, // Optionally return comments with user details
+      comments: blog.comments || [],
+      likes: blog.likes || [],
+      isAnonymous: blog.isAnonymous
     };
 
-    res.json(response);
+    return res.json(response);
   } catch (err) {
-    console.error(err.message);
+    console.error("Error in getBlogById:", err.message);
     if (err.kind === "ObjectId") {
       return res.status(404).json({ msg: "Blog not found" });
     }
-    res.status(500).send("Server Error");
+    return res.status(500).json({ msg: "Server Error" });
   }
 };
 // Delete a blog
