@@ -18,8 +18,24 @@ const storage = new CloudinaryStorage({
   },
 });
 
+// Create a custom storage for photography that allows folder override
+const createPhotographyStorage = (folderName) => {
+  return new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: folderName,
+      allowed_formats: ["jpg", "png", "jpeg"],
+    },
+  });
+};
+
 // Multer middleware
 const upload = multer({ storage });
 
+// Photography upload middleware with custom folder
+const photographyUpload = multer({ 
+  storage: createPhotographyStorage("photography") 
+});
+
 export default upload;
-export { cloudinary };
+export { photographyUpload, cloudinary };

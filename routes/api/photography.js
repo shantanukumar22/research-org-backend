@@ -2,7 +2,7 @@ import express from "express";
 import { check } from "express-validator";
 import auth from "../../middleware/auth.js";
 import admin from "../../middleware/admin.js";
-import upload from "../../middleware/upload.js";
+import { photographyUpload } from "../../middleware/upload.js";
 import photographyController from "../../controllers/photographyController.js";
 
 const router = express.Router();
@@ -13,7 +13,7 @@ router.post(
   [
     auth,
     admin,
-    upload.array("images", 10), // Allow up to 10 images
+    photographyUpload.array("images", 10), // Allow up to 10 images
     [
       check("title", "Title is required").not().isEmpty(),
     ],
@@ -23,6 +23,12 @@ router.post(
 
 // Get all photography collections
 router.get("/all", photographyController.getAllPhotography);
+
+// Get all photography (admin)
+router.get("/admin/all", [auth, admin], photographyController.getAllPhotographyAdmin);
+
+// Get photography by category
+router.get("/category/:category", photographyController.getPhotographyByCategory);
 
 // Get photography by ID
 router.get("/:id", photographyController.getPhotographyById);
@@ -36,18 +42,12 @@ router.put(
   [
     auth,
     admin,
-    upload.array("images", 10),
+    photographyUpload.array("images", 10),
     [
       check("title", "Title is required").not().isEmpty(),
     ],
   ],
   photographyController.updatePhotography
 );
-
-// Get photography by category
-router.get("/category/:category", photographyController.getPhotographyByCategory);
-
-// Get all photography (admin)
-router.get("/admin/all", [auth, admin], photographyController.getAllPhotographyAdmin);
 
 export default router; 

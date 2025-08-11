@@ -11,7 +11,11 @@ const createPhotography = async (req, res) => {
   
   try {
     const { title, description, category, tags } = req.body;
+    console.log("Request body:", req.body);
+    console.log("Request files:", req.files);
+    
     const imageUrls = req.files ? req.files.map(file => file.path) : [];
+    console.log("Image URLs:", imageUrls);
 
     if (imageUrls.length === 0) {
       return res.status(400).json({ message: "At least one image is required" });
@@ -30,10 +34,12 @@ const createPhotography = async (req, res) => {
       createdBy: req.user.id,
     });
 
+    console.log("New photography object:", newPhotography);
     const photography = await newPhotography.save();
+    console.log("Saved photography:", photography);
     res.json(photography);
   } catch (err) {
-    console.error("Error:", err);
+    console.error("Error in createPhotography:", err);
     res.status(500).json({ message: "Server Error", error: err.message });
   }
 };
