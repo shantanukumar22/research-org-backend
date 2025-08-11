@@ -4,6 +4,7 @@ import cors from "cors";
 import userRoutes from "./routes/api/users.js";
 import authRoutes from "./routes/api/auth.js";
 import blogRoutes from "./routes/api/blogs.js";
+import photographyRoutes from "./routes/api/photography.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/photography", photographyRoutes);
 const PORT = process.env.PORT || 5500;
 app.listen(PORT, () => {
   console.log(`server started on the port ${PORT}`);
