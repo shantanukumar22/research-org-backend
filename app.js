@@ -12,7 +12,7 @@ connectDB();
 
 // middleware
 app.use(express.json({ extended: false }));
-app.use(cors());
+app.use(cors({ origin: "*" }));
 
 app.get("/", (req, res) => {
   res.send("API Running ");
